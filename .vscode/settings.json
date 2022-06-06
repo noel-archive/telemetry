@@ -1,0 +1,11 @@
+{
+    "editor.tabSize": 4,
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "rust-analyzer.inlayHints.parameterHints.enable": false,
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///mnt/storage/Projects/Noelware/telemetry-server/.github/workflows/lint.yml"
+    }
+}

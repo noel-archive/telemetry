@@ -1,0 +1,68 @@
+# 🐻‍❄️🌧️ Noelware Telemetry: Telemetry project for Noelware, to capture anonymous data about the running products.
+# Copyright 2022 Noelware <team@noelware.org>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Lint CI
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'feature/**'
+      - 'issue/gh-**'
+      - master
+
+    paths-ignore:
+      - '.github/**'
+      - 'docker/**'
+      - 'scripts/**'
+      - '.dockerignore'
+      - '.gitignore'
+      - '**.md'
+      - 'LICENSE'
+jobs:
+  lint:
+    name: Lint CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Check for compile errors
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+
+      - name: Clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features
+
+      - name: rustfmt
+        uses: mbrobbel/rustfmt-check@master
+        if: ${{ !contains(github.event.head_commit.message, 'using rustfmt') }}
+        with:
+          token: ${{ secrets.NOEL_TOKEN }}
