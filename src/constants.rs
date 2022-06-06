@@ -19,6 +19,10 @@ use std::env;
 #[allow(dead_code)]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// Returns the commit hash from the [Noelware/telemetry repository](https://github.com/Noelware/telemetry repository)
+#[allow(dead_code)]
+pub const COMMIT_HASH: &str = env!("TELEMETRY_COMMIT_HASH");
+
 /// Returns the build date of when the Telemetry server was last built.
 #[allow(dead_code)]
 pub const BUILD_DATE: &str = env!("TELEMETRY_BUILD_DATE");

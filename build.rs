@@ -30,10 +30,13 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
     // Generate the metadata variables
-    // let commit_hash = execute("git", &["rev-parse", "--short=8", "HEAD"]).unwrap();
+    let commit_hash = execute("git", &["rev-parse", "--short=8", "HEAD"]).unwrap();
     let now = SystemTime::now();
     let now_in_utc: DateTime<Utc> = now.into();
 
-    // println!("cargo:rustc-env=TELEMETRY_COMMIT_HASH={}", commit_hash);
-    println!("cargo:rustc-env=TELEMETRY_BUILD_DATE={}", now_in_utc.to_rfc3339());
+    println!("cargo:rustc-env=TELEMETRY_COMMIT_HASH={}", commit_hash);
+    println!(
+        "cargo:rustc-env=TELEMETRY_BUILD_DATE={}",
+        now_in_utc.to_rfc3339()
+    );
 }
