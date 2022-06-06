@@ -1,4 +1,4 @@
-# 🐻‍❄️🌧️ Noelware Telemetry: Telemetry project for Noelware, to capture anonymous data about the running products.
+# 🐻‍❄️🌧️ Noelware Telemetry: Telemetry project for Noelware to capture anonymous data about our running products.
 # Copyright 2022 Noelware <team@noelware.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,5 +1,5 @@
 # 🐻‍❄️🌧️ Noelware Telemetry
-> *Telemetry project for Noelware, to capture anonymous data about the running products.*
+> *Telemetry project for Noelware to capture anonymous data about our running products.*
 
 ## Why? Should I even... trust you?
 Because, even though that "telemetry" has a bad reputation on how it is used, this is not the purpose of this project.
