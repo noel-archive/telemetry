@@ -15,6 +15,7 @@
 
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
+use std::fmt::Write as _;
 use std::{env::var, fs::read_to_string};
 
 static CONFIG: OnceCell<Config> = OnceCell::new();
@@ -101,7 +102,7 @@ impl ToString for ClickHouseConfig {
         match self.max_connections_in_pool {
             Some(max_conn) => {
                 url.push(prefix);
-                url.push_str(&format!("pool_max={}", max_conn));
+                let _ = write!(url, "pool_max={}", max_conn);
 
                 if prefix == '?' {
                     prefix = '&';
@@ -114,7 +115,7 @@ impl ToString for ClickHouseConfig {
         match self.min_connections_in_pool {
             Some(min_conn) => {
                 url.push(prefix);
-                url.push_str(&format!("pool_min={}", min_conn));
+                let _ = write!(url, "pool_max={}", min_conn);
             }
 
             None => {}
