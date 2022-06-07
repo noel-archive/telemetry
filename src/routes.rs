@@ -13,11 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::time::SystemTime;
+
 use actix_web::{web, HttpResponse, Responder};
-use serde::Serialize;
+use chrono::{DateTime, Utc};
+use clickhouse_rs::Block;
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 use crate::{
-    responses::{self, respond},
+    responses::{self, respond, ApiResponse, Empty},
     telemetry::TelemetryServer,
 };
 
@@ -30,6 +36,17 @@ struct MainResponse {
 struct StatsResponse {
     db_calls: usize,
     events_emitted: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TrackBody {
+    product: String,
+    vendor: String,
+    arch: String,
+    os: String,
+    version: String,
+    distribution: String,
+    data: Value,
 }
 
 pub async fn home() -> impl Responder {
@@ -56,5 +73,60 @@ pub async fn stats(data: web::Data<TelemetryServer>) -> impl Responder {
     HttpResponse::Ok().json(respond(StatsResponse {
         db_calls: 0,
         events_emitted: events_emitted.unwrap(),
+    }))
+}
+
+// But, how can we not forge data? Well, I will tell you.
+
+pub async fn send(
+    mut data_payload: web::Payload,
+    data: web::Data<TelemetryServer>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let mut body = web::BytesMut::new();
+    while let Some(chunk) = data_payload.next().await {
+        let chunk = chunk?;
+        if (body.len() + chunk.len()) > 262_144 {
+            return Err(actix_web::error::ErrorPayloadTooLarge(format!(
+                "{:#?}",
+                serde_json::to_string::<ApiResponse<Empty>>(&ApiResponse::<Empty> {
+                    success: false,
+                    data: None,
+                    errors: Some(vec![responses::Error::new("", "")]),
+                }),
+            )));
+        }
+
+        body.extend_from_slice(&chunk);
+    }
+
+    let payload = serde_json::from_slice::<TrackBody>(&body)?;
+    let clickhouse = data.clickhouse.clone();
+    let now = SystemTime::now();
+    let now_in_utc: DateTime<Utc> = now.into();
+
+    let payload_to_ch = json!({
+        "distribution": payload.distribution,
+        "version": payload.version,
+        "arch": payload.arch,
+        "os": payload.os,
+        "data": payload.data,
+        "fired_at": now_in_utc.to_rfc3339()
+    });
+
+    let block = Block::new()
+        .column("Data", vec![serde_json::to_string(&payload_to_ch).unwrap()])
+        .column("ID", vec![1u64])
+        .column("Product", vec![payload.product])
+        .column("Vendor", vec![payload.vendor]);
+
+    clickhouse
+        .insert("events", block.clone())
+        .await
+        .expect("Unable to insert into ClickHouse");
+
+    Ok(HttpResponse::Created().json(ApiResponse::<Empty> {
+        success: true,
+        data: None,
+        errors: None,
     }))
 }

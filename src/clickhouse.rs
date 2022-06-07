@@ -70,4 +70,19 @@ impl ClickHouse {
 
         Ok(result)
     }
+
+    pub async fn insert<S>(&self, table: S, block: Block) -> Result<(), Box<dyn std::error::Error>>
+    where
+        S: Into<String> + AsRef<str>,
+    {
+        debug!("grabbing connection...");
+        let pool = self.pool.clone();
+        let mut handle = pool.get_handle().await?;
+
+        debug!("grabbed connection successfully!");
+        DATABASE_CALLS.get().unwrap().fetch_add(1, Ordering::SeqCst);
+
+        handle.insert(table, block).await?;
+        Ok(())
+    }
 }

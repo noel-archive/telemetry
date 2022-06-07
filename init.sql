@@ -26,13 +26,15 @@
 
 DROP TABLE IF EXISTS telemetry.events;
 
-SET allow_experimental_object_type = 1;
 CREATE TABLE IF NOT EXISTS telemetry."events"(
     -- At what time this telemetry event was fired at.
-    FiredAt DateTime,
 
-    -- The data object that is used.
-    Data JSON,
+    -- clickhouse-rs doesn't support DateTime64, or it doesn't work well.
+    -- FiredAt DateTime64(9, 'UTC'),
+
+    -- The data object that is used. It is a string since clickhouse-rs
+    -- doesn't support serde.
+    Data String,
 
     -- The ID of the telemetry event.
     ID UInt64,
@@ -42,7 +44,7 @@ CREATE TABLE IF NOT EXISTS telemetry."events"(
 
     -- The vendor, always "Noelware"
     Vendor String
-) ENGINE=MergeTree() PARTITION BY toYYYYMM(FiredAt) ORDER BY (ID, Product, Vendor, FiredAt);
+) ENGINE=MergeTree() ORDER BY (ID, Product, Vendor);
 
 -- -- Use this line for replication.
 -- CREATE TABLE IF NOT EXISTS telemetry."events"(

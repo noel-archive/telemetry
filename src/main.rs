@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!(
         "bootstrapping v{} ({}) of telemetry-server...",
         constants::VERSION,
-        ""
+        constants::COMMIT_HASH
     );
 
     let clickhouse = ClickHouse::new(config.clickhouse.as_ref().unwrap());

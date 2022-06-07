@@ -70,6 +70,7 @@ impl TelemetryServer {
                 .wrap(Logger::new("%r %s [%b bytes; %D ms]").log_target("actix::http::request"))
                 .route("/", web::get().to(routes::home))
                 .route("/stats", web::get().to(routes::stats))
+                .route("/track", web::post().to(routes::send))
         })
         .bind(addr)?
         .run()

@@ -22,17 +22,17 @@ pub struct ApiResponse<T>
 where
     T: Serialize + Debug,
 {
-    success: bool,
+    pub success: bool,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    data: Option<T>,
+    pub data: Option<T>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    errors: Option<Vec<Error>>,
+    pub errors: Option<Vec<Error>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Error {
+pub struct Error {
     message: String,
     code: String,
 }
@@ -41,7 +41,7 @@ struct Error {
 pub struct Empty {}
 
 impl Error {
-    fn new(code: &str, message: &str) -> Error {
+    pub fn new(code: &str, message: &str) -> Error {
         Error {
             code: code.into(),
             message: message.into(),
