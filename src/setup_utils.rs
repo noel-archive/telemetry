@@ -82,6 +82,7 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                     let level_name = record.level().as_str();
                     let regex = Regex::new(ANSI_TERM_REGEX).unwrap();
                     let msg = regex.replace_all(format_args!("{}", message).to_string().as_str(), "").to_string();
+                    let pid = std::process::id();
                     let data = json!({
                         "@timestamp": Local::now().to_rfc3339(),
                         "@version": "1",
@@ -90,6 +91,7 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                         "module": record.target(),
                         "thread": name,
                         "level": level_name,
+                        "pid": pid,
                         "file": json!({
                             "path": record.file(),
                             "line": record.line()
@@ -98,16 +100,19 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
 
                     out.finish(format_args!("{}", data));
                 } else {
+                    let pid = std::process::id();
                     out.finish(format_args!(
-                        "{} {:<5} [{} <{}>] :: {}",
+                        "{} {:<5} [{} <{}> ({})] :: {}",
                         Local::now().format("[%B %d, %G | %H:%M:%S %p]"),
                         record.level(),
                         record.target(),
+                        pid,
                         name,
                         message
                     ));
                 }
             } else if is_json {
+                let pid = std::process::id();
                 let level_name = record.level().as_str();
                 let msg = format_args!("{}", message).to_string();
 
@@ -119,6 +124,7 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                     "module": record.target(),
                     "thread": name,
                     "level": level_name,
+                    "pid": pid,
                     "file": json!({
                         "path": record.file(),
                         "line": record.line()
@@ -128,25 +134,24 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                 out.finish(format_args!("{}", data));
             } else {
                 let color = match record.level() {
-                    log::Level::Error => RGB(153, 75, 104),
-                    log::Level::Debug => RGB(163, 182, 138),
-                    log::Level::Info => RGB(178, 157, 243),
-                    log::Level::Trace => RGB(163, 182, 138),
-                    log::Level::Warn => RGB(243, 243, 134),
+                    log::Level::Error => RGB(153, 75, 104).bold(),
+                    log::Level::Debug => RGB(163, 182, 138).bold(),
+                    log::Level::Info => RGB(178, 157, 243).bold(),
+                    log::Level::Trace => RGB(163, 182, 138).bold(),
+                    log::Level::Warn => RGB(243, 243, 134).bold(),
                 };
 
-                out.finish(format_args!(
-                    "{} {} {}{}{} :: {}",
-                    RGB(134, 134, 134).paint(format!(
-                        "{}",
-                        Local::now().format("[%B %d, %G | %H:%M:%S %p]")
-                    )),
-                    color.paint(format!("{:<5}", record.level())),
-                    RGB(178, 157, 243).paint(format!("[{} ", record.target())),
-                    RGB(255, 105, 189).paint(format!("<{}>", name)),
-                    RGB(178, 157, 243).paint("]"),
-                    message
-                ));
+                let pid = std::process::id();
+                let time = RGB(134, 134, 134).paint(format!("{}", Local::now().format("[%B %d, %G | %H:%M:%S %p]")));
+                let level = color.paint(format!("{:<5}", record.level()));
+                let (b1, b2) = (RGB(134, 134, 134).paint("["), RGB(134, 134, 134).paint("]"));
+                let (p1, p2) = (RGB(134, 134, 134).paint("("), RGB(134, 134, 134).paint(")"));
+                let (c1, c2) = (RGB(134, 134, 134).paint("<"), RGB(134, 134, 134).paint(">"));
+                let target = RGB(120, 231, 255).paint(record.target());
+                let thread_name = RGB(255, 105, 189).paint(name);
+                let pid_colour = RGB(169, 147, 227).paint(pid.to_string());
+
+                out.finish(format_args!("{time} {level} {b1}{target} {c1}{thread_name}{c2} {p1}{pid_colour}{p2}{b2} :: {}", message));
             }
         })
         .level(log_level)
@@ -173,6 +178,7 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                                 return;
                             }
 
+                            let pid = std::process::id();
                             let thread = std::thread::current();
                             let thread_name = thread.name().unwrap_or("main");
                             let level_name = record.level().as_str();
@@ -189,6 +195,7 @@ pub fn setup_logging(config: &Config) -> Result<(), Box<dyn std::error::Error>> 
                                 "module": record.target(),
                                 "thread": thread_name,
                                 "level": level_name,
+                                "pid": pid,
                                 "file": json!({
                                     "path": record.file(),
                                     "line": record.line()

@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use crate::{
+    clickhouse::ClickHouse,
     responses::{self, respond, ApiResponse, Empty},
     telemetry::TelemetryServer,
 };
@@ -57,6 +58,8 @@ pub async fn home() -> impl Responder {
 
 pub async fn stats(data: web::Data<TelemetryServer>) -> impl Responder {
     let clickhouse = data.clickhouse.clone();
+    let calls = ClickHouse::calls();
+
     let events_emitted = clickhouse
         .query("SELECT COUNT(*) FROM telemetry.events", |block| {
             block.get::<u64, _>(0, 0).unwrap_or(0)
@@ -71,7 +74,7 @@ pub async fn stats(data: web::Data<TelemetryServer>) -> impl Responder {
     }
 
     HttpResponse::Ok().json(respond(StatsResponse {
-        db_calls: 0,
+        db_calls: calls,
         events_emitted: events_emitted.unwrap(),
     }))
 }
@@ -113,9 +116,11 @@ pub async fn send(
         "fired_at": now_in_utc.to_rfc3339()
     });
 
+    let mut snowflake = data.snowflake.clone();
+    let id = snowflake.generate();
     let block = Block::new()
         .column("Data", vec![serde_json::to_string(&payload_to_ch).unwrap()])
-        .column("ID", vec![1u64])
+        .column("ID", vec![id as u64])
         .column("Product", vec![payload.product])
         .column("Vendor", vec![payload.vendor]);
 

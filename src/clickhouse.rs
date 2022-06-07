@@ -42,6 +42,10 @@ impl ClickHouse {
         ClickHouse { pool }
     }
 
+    pub fn calls() -> usize {
+        DATABASE_CALLS.get().unwrap().load(Ordering::SeqCst)
+    }
+
     pub async fn ping(self) -> Result<(), Box<dyn std::error::Error>> {
         debug!("grabbing connection...");
         let pool = self.pool.clone();

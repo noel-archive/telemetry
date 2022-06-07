@@ -21,12 +21,13 @@ use actix_web::{
     App, HttpServer,
 };
 
-use crate::{clickhouse::ClickHouse, config::Config, routes};
+use crate::{clickhouse::ClickHouse, config::Config, routes, snowflake::Snowflake};
 
 #[derive(Debug, Clone)]
 pub struct TelemetryServer {
     pub config: &'static Config,
     pub clickhouse: ClickHouse,
+    pub snowflake: Snowflake,
 }
 
 impl TelemetryServer {
@@ -34,6 +35,7 @@ impl TelemetryServer {
         TelemetryServer {
             config: Config::get(),
             clickhouse,
+            snowflake: Snowflake::new(),
         }
     }
 

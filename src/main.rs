@@ -28,6 +28,7 @@ mod constants;
 mod responses;
 mod routes;
 mod setup_utils;
+mod snowflake;
 mod telemetry;
 
 #[tokio::main]
