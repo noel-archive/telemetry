@@ -44,7 +44,7 @@ clickhouse-rs = "1.0.0-alpha.1"
 rand_core = { version = "0.6.3", features = ["std"] }
 async-trait = "0.1.56"
 actix-utils = "3.0.0"
-regex = "1.5.6"
+regex = "1.6.0"
 validator = { version = "0.15.0", features = ["derive"] }
 
 [build-dependencies]
