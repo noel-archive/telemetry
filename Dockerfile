@@ -30,7 +30,7 @@ RUN rm dummy.rs && sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
 COPY . .
 RUN cargo build --release
 
-FROM alpine:3.16
+FROM alpine:3.17
 
 RUN apk update && apk add --no-cache openssl build-base bash tini
 WORKDIR /app/noelware/telemetry
