@@ -42,7 +42,7 @@ sentry-log = "0.29.1"
 sentry-tracing = "0.29.1"
 clickhouse-rs = "1.0.0-alpha.1"
 rand_core = { version = "0.6.4", features = ["std"] }
-async-trait = "0.1.59"
+async-trait = "0.1.60"
 actix-utils = "3.0.1"
 regex = "1.7.0"
 validator = { version = "0.16.0", features = ["derive"] }
