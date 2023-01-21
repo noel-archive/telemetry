@@ -36,7 +36,7 @@ chrono-tz = "0.8.1"
 serde_json = "1.0.91"
 anyhow = "1.0.68"
 thiserror = "1.0.38"
-actix-web = "4.2.1"
+actix-web = "4.3.0"
 futures = { version = "0.3.25", default-features = false, features = ["std"] }
 sentry-log = "0.29.1"
 sentry-tracing = "0.29.1"
