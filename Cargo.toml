@@ -38,7 +38,7 @@ anyhow = "1.0.69"
 thiserror = "1.0.38"
 actix-web = "4.3.0"
 futures = { version = "0.3.26", default-features = false, features = ["std"] }
-sentry-log = "0.29.2"
+sentry-log = "0.29.3"
 sentry-tracing = "0.29.2"
 clickhouse-rs = "1.0.0-alpha.1"
 rand_core = { version = "0.6.4", features = ["std"] }
