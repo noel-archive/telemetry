@@ -24,7 +24,7 @@ repository = "https://github.com/Noelware/telemetry-server"
 
 [dependencies]
 fern = "0.6.1"
-tokio = { version = "1.25.0", features = ["full"] }
+tokio = { version = "1.26.0", features = ["full"] }
 log = "0.4.17"
 serde = "1.0.152"
 toml = "0.7.2"
