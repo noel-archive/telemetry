@@ -33,7 +33,7 @@ sentry = "0.30.0"
 ansi_term = "0.12.1"
 chrono = { version = "0.4.23", default-features = false, features = ["serde", "std"] }
 chrono-tz = "0.8.1"
-serde_json = "1.0.93"
+serde_json = "1.0.94"
 anyhow = "1.0.69"
 thiserror = "1.0.38"
 actix-web = "4.3.1"
