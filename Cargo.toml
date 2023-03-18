@@ -35,7 +35,7 @@ chrono = { version = "0.4.24", default-features = false, features = ["serde", "s
 chrono-tz = "0.8.1"
 serde_json = "1.0.94"
 anyhow = "1.0.70"
-thiserror = "1.0.39"
+thiserror = "1.0.40"
 actix-web = "4.3.1"
 futures = { version = "0.3.27", default-features = false, features = ["std"] }
 sentry-log = "0.30.0"
